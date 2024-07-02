@@ -1,6 +1,7 @@
 package example.com
 
-import example.com.dao.DatabaseFactory
+import example.com.core.DatabaseFactory
+import example.com.di.configureDI
 import example.com.plugins.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -14,6 +15,7 @@ fun main() {
 fun Application.module() {
     configureSerialization()
     DatabaseFactory.init()
+    configureDI()
 //    configureDatabases()
     configureSecurity()
     configureRouting()
