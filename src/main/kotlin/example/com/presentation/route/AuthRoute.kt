@@ -1,5 +1,6 @@
 package example.com.presentation.route
 
+import example.com.core.data.models.LoginParams
 import example.com.core.data.models.SignupParams
 import example.com.core.domain.models.AuthResponse
 import example.com.core.domain.repositories.AuthRepository
@@ -36,6 +37,29 @@ fun Routing.authRouting() {
             }
 
             val result = authRepository.signUp(params)
+            call.respond(
+                status = result.code,
+                message = result.data
+            )
+
+        }
+    }
+
+    route(path = "/login") {
+        post {
+            // here we will receive the signup params and it serialize it to the SignupParams class
+            val params = call.receiveNullable<LoginParams>()
+
+            // if params is null that means the request body is empty or is unable to serialize to the SignupParams class
+            if (params == null) {
+                call.respond(
+                    status = HttpStatusCode.BadRequest,
+                    message = AuthResponse(errorMessage = "Invalid request body")
+                )
+                return@post
+            }
+
+            val result = authRepository.login(params)
             call.respond(
                 status = result.code,
                 message = result.data

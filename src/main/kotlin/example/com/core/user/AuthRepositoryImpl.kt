@@ -5,6 +5,7 @@ import example.com.core.data.models.LoginParams
 import example.com.core.data.models.SignupParams
 import example.com.core.domain.models.AuthResponse
 import example.com.core.domain.models.AuthResponseData
+import example.com.core.domain.models.User
 import example.com.core.domain.repositories.AuthRepository
 import example.com.utils.Response
 import io.ktor.http.HttpStatusCode
@@ -46,10 +47,42 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun login(loginParams: LoginParams): Response<AuthResponse> {
-        TODO("Not yet implemented")
+        val user = getUserByEmail(loginParams.email)
+            ?: run {
+                // user not found
+                // send error response
+                return Response.Error(
+                    HttpStatusCode.NotFound,
+                    data = AuthResponse(errorMessage = "User not found")
+                )
+            }
+        return if (user.password == loginParams.password) {
+            Response.Success(
+                AuthResponse(
+                    data = AuthResponseData(
+                        id = user.id,
+                        name = user.name,
+                        bio = user.bio,
+                        avatar = user.avatar,
+                        token = "token",
+                    )
+                )
+            )
+        } else {
+            // password mismatch
+            // send error response
+            Response.Error(
+                HttpStatusCode.Unauthorized,
+                data = AuthResponse(errorMessage = "Invalid Credentials!")
+            )
+        }
     }
 
     private suspend fun userAlreadyExists(email: String): Boolean {
-        return userDao.findUserByEmail(email) != null
+        return getUserByEmail(email) != null
+    }
+
+    private suspend fun getUserByEmail(email: String): User? {
+        return userDao.findUserByEmail(email)
     }
 }
