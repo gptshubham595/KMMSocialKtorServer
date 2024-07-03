@@ -1,20 +1,26 @@
 package example.com.presentation.route
 
 import example.com.core.data.models.SignupParams
-import example.com.core.domain.repositories.UserRepository
-import example.com.utils.Either
+import example.com.core.domain.models.AuthResponse
+import example.com.core.domain.repositories.AuthRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receiveNullable
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.Routing
+import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 
 fun Routing.authRouting() {
-    val userRepository by inject<UserRepository>()
-
+    val authRepository by inject<AuthRepository>()
+    route(path = "/") {
+        get {
+            call.respondText("Hello World!")
+        }
+    }
     route(path = "/signup") {
         post {
             // here we will receive the signup params and it serialize it to the SignupParams class
@@ -24,12 +30,12 @@ fun Routing.authRouting() {
             if (params == null) {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
-                    message = Either.Failure("Invalid request body")
+                    message = AuthResponse(errorMessage = "Invalid request body")
                 )
                 return@post
             }
 
-            val result = userRepository.signUp(params)
+            val result = authRepository.signUp(params)
             call.respond(
                 status = result.code,
                 message = result.data

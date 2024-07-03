@@ -5,44 +5,40 @@ import example.com.core.data.models.LoginParams
 import example.com.core.data.models.SignupParams
 import example.com.core.domain.models.AuthResponse
 import example.com.core.domain.models.AuthResponseData
-import example.com.core.domain.models.ErrorMessage
-import example.com.core.domain.repositories.UserRepository
-import example.com.utils.Either
+import example.com.core.domain.repositories.AuthRepository
 import example.com.utils.Response
 import io.ktor.http.HttpStatusCode
 
-class UserRepositoryImpl(
+class AuthRepositoryImpl(
     private val userDao: UserDao
-) : UserRepository {
+) : AuthRepository {
     override suspend fun signUp(signupParams: SignupParams): Response<AuthResponse> {
         if (userAlreadyExists(signupParams.email)) {
             // user already exists
             // send error response
             return Response.Error(
                 HttpStatusCode.Conflict,
-                data = AuthResponse(Either.Failure(ErrorMessage("User already exists")))
+                data = AuthResponse(errorMessage = "User already exists")
             )
         } else {
             // create user
             val insertedUser = userDao.createUser(signupParams)
-            if (insertedUser == null) {
-                // user creation failed
-                // send error response
-                return Response.Error(
-                    HttpStatusCode.InternalServerError,
-                    data = AuthResponse(Either.Failure(ErrorMessage("User creation failed")))
-                )
-            }
+                ?: run {
+                    // user creation failed
+                    // send error response
+                    return Response.Error(
+                        HttpStatusCode.InternalServerError,
+                        data = AuthResponse(errorMessage = "User creation failed")
+                    )
+                }
             return Response.Success(
                 AuthResponse(
-                    Either.Success(
-                        AuthResponseData(
-                            id = insertedUser.id,
-                            name = insertedUser.name,
-                            bio = insertedUser.bio,
-                            avatar = insertedUser.avatar,
-                            token = "token",
-                        )
+                    data = AuthResponseData(
+                        id = insertedUser.id,
+                        name = insertedUser.name,
+                        bio = insertedUser.bio,
+                        avatar = insertedUser.avatar,
+                        token = "token",
                     )
                 )
             )

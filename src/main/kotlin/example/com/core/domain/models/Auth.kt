@@ -1,15 +1,20 @@
 package example.com.core.domain.models
 
 import example.com.utils.Either
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class AuthResponse(
-    val data: Either<ErrorMessage, AuthResponseData>? = null,
+    val data: /*Either<ErrorMessage, */AuthResponseData/*>*/? = null,
+    val errorMessage: String? = null
 )
 
+@Serializable
 data class ErrorMessage(
     val message: String
 )
 
+@Serializable
 data class AuthResponseData(
     val id: Int,
     val name: String,
