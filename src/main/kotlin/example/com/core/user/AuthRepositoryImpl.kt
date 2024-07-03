@@ -7,6 +7,8 @@ import example.com.core.domain.models.AuthResponse
 import example.com.core.domain.models.AuthResponseData
 import example.com.core.domain.models.User
 import example.com.core.domain.repositories.AuthRepository
+import example.com.plugins.generateToken
+import example.com.presentation.security.hashPassword
 import example.com.utils.Response
 import io.ktor.http.HttpStatusCode
 
@@ -39,7 +41,9 @@ class AuthRepositoryImpl(
                         name = insertedUser.name,
                         bio = insertedUser.bio,
                         avatar = insertedUser.avatar,
-                        token = "token",
+                        token = generateToken(insertedUser.email),
+                        followersCount = 0,
+                        followingCount = 0,
                     )
                 )
             )
@@ -56,7 +60,8 @@ class AuthRepositoryImpl(
                     data = AuthResponse(errorMessage = "User not found")
                 )
             }
-        return if (user.password == loginParams.password) {
+        val hashPassword = hashPassword(loginParams.password)
+        return if (user.password == hashPassword) {
             Response.Success(
                 AuthResponse(
                     data = AuthResponseData(
@@ -64,7 +69,7 @@ class AuthRepositoryImpl(
                         name = user.name,
                         bio = user.bio,
                         avatar = user.avatar,
-                        token = "token",
+                        token = generateToken(user.email),
                     )
                 )
             )

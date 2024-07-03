@@ -5,6 +5,7 @@ import example.com.core.data.dao.user.UserDao
 import example.com.core.data.models.SignupParams
 import example.com.core.data.models.UserTable
 import example.com.core.domain.models.User
+import example.com.presentation.security.hashPassword
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -14,7 +15,7 @@ class UserDaoImpl : UserDao {
         return dbQuery {
             val insertStatement = UserTable.insert {
                 it[email] = signupParams.email
-                it[password] = signupParams.password
+                it[password] = hashPassword(signupParams.password)
                 it[name] = signupParams.name
             }
 
