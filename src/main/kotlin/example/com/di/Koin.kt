@@ -9,4 +9,5 @@ fun Application.configureDI() {
         // declare used modules
         modules(appModule)
     }
+
 }

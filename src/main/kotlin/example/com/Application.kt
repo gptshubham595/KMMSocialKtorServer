@@ -16,7 +16,7 @@ fun Application.module() {
     configureSerialization()
     DatabaseFactory.init()
     configureDI()
-//    configureDatabases()
     configureSecurity()
+    configureSwagger()
     configureRouting()
 }

@@ -22,7 +22,7 @@ fun Routing.authRouting() {
             call.respondText("Hello World!")
         }
     }
-    route(path = "/signup") {
+    route(path = "/auth/signup") {
         post {
             // here we will receive the signup params and it serialize it to the SignupParams class
             val params = call.receiveNullable<SignupParams>()
@@ -45,7 +45,7 @@ fun Routing.authRouting() {
         }
     }
 
-    route(path = "/login") {
+    route(path = "/auth/login") {
         post {
             // here we will receive the signup params and it serialize it to the SignupParams class
             val params = call.receiveNullable<LoginParams>()

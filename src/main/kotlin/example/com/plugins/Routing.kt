@@ -2,8 +2,6 @@ package example.com.plugins
 
 import example.com.presentation.route.authRouting
 import io.ktor.server.application.*
-import io.ktor.server.http.content.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Application.configureRouting() {
@@ -15,6 +13,7 @@ fun Application.configureRouting() {
 //        static("/static") {
 //            resources("static")
 //        }
+//        swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
         authRouting()
     }
 }
